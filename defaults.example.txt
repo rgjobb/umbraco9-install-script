@@ -1,0 +1,21 @@
+# Copy this file and rename it to defaults.txt
+# Uncomment to use defaults (remove hash)
+
+# INSTALLPATH="C:\Users\repos"
+
+# UMBRACO_UPDATE_TEMPLATES=y
+# UMBRACO_EMAIL=
+# UMBRACO_PWD=
+
+# DBSERVER=localhost\SQLEXPRESS
+# DBSERVER=
+# DBUSER=
+# DBUSERPWD=
+
+# INSTALL_IGLOO=y
+# ADD_TO_IIS=y
+
+# Install packages (comma separated list).
+# PACKAGES="Umbraco.Forms,uSync,Skybrud.Umbraco.Redirects,Our.Umbraco.TheDashboard"
+# CUSTOM_NUGET_SOURCE="https://nuget.myserver.com/index.json"
+# CUSTOM_PACKAGES="MyCustomPackage"
