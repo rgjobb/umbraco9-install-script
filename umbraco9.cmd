@@ -1,9 +1,9 @@
-REM umbraco9 install script V.0.5 by Roger Grimstad
+REM umbraco9 install script V.0.5.1 by Roger Grimstad
 
 @echo off & setlocal
 SETLOCAL EnableDelayedExpansion
 
-if exist %~dp0umbraco9-defaults.env (
+if exist %~dp0defaults.txt (
  	for /f "delims== tokens=1,2" %%G in (%~dp0defaults.txt) do call :setvar %%G %%H
 )
 
