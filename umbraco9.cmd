@@ -1,4 +1,4 @@
-REM umbraco9 install script V.0.5.1 by Roger Grimstad
+REM umbraco9 install script V.0.5.2 by Roger Grimstad
 
 @echo off & setlocal
 SETLOCAL EnableDelayedExpansion

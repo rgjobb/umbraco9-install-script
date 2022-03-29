@@ -11,7 +11,10 @@
 # UMBRACO_PWD=
 
 # DBSERVER=localhost\SQLEXPRESS
-# DBSERVER=
+
+# If using the Developer version of SQL Server a period like below is enough
+# DBSERVER=.
+
 # DBUSER=
 # DBUSERPWD=
 
