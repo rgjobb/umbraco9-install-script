@@ -1,7 +1,10 @@
 # Copy this file and rename it to defaults.txt
 # Uncomment to use defaults (remove hash)
 
-# INSTALLPATH="C:\Users\repos"
+# The default framework is net5.0, but can be set to net6.0
+# FRAMEWORK=net6.0
+
+# INSTALLPATH="C:\repos"
 
 # UMBRACO_UPDATE_TEMPLATES=y
 # UMBRACO_EMAIL=

@@ -1,4 +1,4 @@
-REM umbraco9 install script V.0.4 by Roger Grimstad
+REM umbraco9 install script V.0.5 by Roger Grimstad
 
 @echo off & setlocal
 SETLOCAL EnableDelayedExpansion
@@ -19,7 +19,9 @@ set "IGLOO_PACKAGE=LittleNorth.Igloo"
 set "ISEC=Integrated Security"
 set "DEFAULT_DBSERVER=localhost\SQLEXPRESS"
 set "DEFAULT_UPDATE=n"
+set "DEFAULT_FRAMEWORK=net5.0"
 
+if not defined FRAMEWORK set "FRAMEWORK=%DEFAULT_FRAMEWORK%"
 if not defined UMBRACO_UPDATE_TEMPLATES set /p UPDATE="Update Umbraco Templates (Y/[N]): " || set "UMBRACO_UPDATE_TEMPLATES=%DEFAULT_UPDATE%"
 if /I "%UMBRACO_UPDATE_TEMPLATES%" == "y" dotnet new -i Umbraco.Templates::*
 if not defined INSTALLPATH set /p INSTALLPATH="Install path (root folder) [%DEFAULT_INSTALLPATH%]: " || set "INSTALLPATH=%DEFAULT_INSTALLPATH%"
@@ -50,7 +52,7 @@ if /I "%INSTALLPATH%" NEQ "%CD%" cd /d "%INSTALLPATH%"
 mkdir "%SNAME%"
 cd "%SNAME%"
 dotnet new sln --name "%SNAME%"
-dotnet new umbraco -n "%PNAME%" --friendly-name "Admin User" --email "%UMBRACO_EMAIL%" --password "%UMBRACO_PWD%" --connection-string "%DBCSTRING%"
+dotnet new umbraco -n "%PNAME%" --friendly-name "Admin User" --email "%UMBRACO_EMAIL%" --password "%UMBRACO_PWD%" --connection-string "%DBCSTRING%" --Framework "%FRAMEWORK%"
 dotnet sln add "%PNAME%"
 
 if /I "%INSTALL_IGLOO%" == "y" (
