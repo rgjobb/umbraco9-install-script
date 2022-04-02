@@ -4,7 +4,9 @@ param (
 	[string]$path = $(Read-Host -Prompt 'Path'),	
 	[string]$name = $(Read-Host -Prompt 'iis Name'),
 	[string]$sdname = $(Read-Host -Prompt 'Subdomain Name'),
-	[string]$pname = $(Read-Host -Prompt 'Project Name')
+	[string]$pname = $(Read-Host -Prompt 'Project Name'),
+	[string]$netframework = $(Read-Host -Prompt '.net framework [net5.0]')
+	
 )
 
 $script = $myinvocation.mycommand.definition
@@ -15,7 +17,7 @@ $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
 {
     Write-Host "Script has been opened without Admin permissions, attempting to restart as admin"
-    $arguments = "-ExecutionPolicy Bypass -noexit & '" + $script + "'","-path $path -name $name -sdname $sdname -pname $pname"
+    $arguments = "-ExecutionPolicy Bypass -noexit & '" + $script + "'","-path $path -name $name -sdname $sdname -pname $pname -netframework $netframework"
     Start-Process powershell -Verb runAs -ArgumentList $arguments
     Break
 }
@@ -47,6 +49,13 @@ if(([string]::IsNullOrWhiteSpace($name))) {
 $sdname = $sdname.Replace(' ', '-')
 $sdname = $sdname.ToLower()
 $file = $path + "\web.config"
+$nframework = "net5.0"
+
+if((![string]::IsNullOrWhiteSpace($netframework))) {
+	$nframework = $netframework
+}
+
+$exepath = $nframework+"\"+$pname
 
 if (Get-Item -Path $file -ErrorAction Ignore) {
 	$overwriteFile = Read-Host -Prompt 'web.config already exists in project folder, overwrite? ([Y]/N)'
@@ -54,7 +63,7 @@ if (Get-Item -Path $file -ErrorAction Ignore) {
 
 if ( $overwriteFile -ne 'n' )
 {
-    (Get-Content $scriptPath\web.config) -replace 'test', $pname | Out-File -encoding ASCII $path\web.config
+    (Get-Content $scriptPath\web.config) -replace  'test', $exepath | Out-File -encoding ASCII $path\web.config
 }
 
 $iisls1 = '"iis": {

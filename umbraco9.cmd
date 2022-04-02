@@ -1,4 +1,4 @@
-REM umbraco9 install script V.0.5.2 by Roger Grimstad
+REM umbraco9 install script V.0.5.3 by Roger Grimstad
 
 @echo off & setlocal
 SETLOCAL EnableDelayedExpansion
@@ -42,8 +42,11 @@ if /I "%ADD_TO_IIS%" == "y" (
 	if not defined DBUSERPWD set /p DBUSERPWD="Database User Password: " || set "DBUSERPWD=%DEFAULT_PWD%"	
 )
 
-if defined DBUSERPWD set "DBCSTRING=Server=%DBSERVER%;Database=%DBNAME%;user id=%DBUSER%;password='%DBUSERPWD%'"
-else set "DBCSTRING=Server=%DBSERVER%;Database=%DBNAME%;Integrated Security=true"
+if defined DBUSERPWD (	
+	set "DBCSTRING=Server=%DBSERVER%;Database=%DBNAME%;user id=%DBUSER%;password='%DBUSERPWD%'"
+) else (	
+	set "DBCSTRING=Server=%DBSERVER%;Database=%DBNAME%;Integrated Security=true"
+)
 
 if not defined INSTALL_IGLOO set /p INSTALL_IGLOO="Add Igloo ([Y]/N): " || set "INSTALL_IGLOO=%DEFAULT_INSTALL_IGLOO%"
 
@@ -59,24 +62,24 @@ if /I "%INSTALL_IGLOO%" == "y" (
 	dotnet add "%PNAME%" package "%IGLOO_PACKAGE%"
 )
 
-if defined %PACKAGES% (
+cd "%PNAME%"
+
+if defined "%PACKAGES%" (
 	for %%a in ("%PACKAGES:,=" "%") do (
 		dotnet add "%PNAME%" package %%a
 	)
 )
 
-if defined %CUSTOM_PACKAGES% if defined %CUSTOM_NUGET_SOURCE% (
+if defined "%CUSTOM_PACKAGES%" if defined "%CUSTOM_NUGET_SOURCE%" (
 	for %%a in ("%CUSTOM_PACKAGES:,=" "%") do (
-		dotnet add "%PNAME%" package %%a -s %CUSTOM_NUGET_SOURCE%	   
+		dotnet add "%PNAME%" package %%a -s "%CUSTOM_NUGET_SOURCE%"	   
 	)
 )
 
-cd "%PNAME%"
-
 if /I "%ADD_TO_IIS%" == "y" (
-	dotnet add package System.Drawing.Common --version 6.0.0
-	dotnet add package System.Security.Cryptography.Pkcs --version 6.0.0
-	powershell -ExecutionPolicy Bypass addtoiis.ps1 -path "%CD%" -name "%IISNAME%" -sdname "%SUBDOMAIN%" -pname "%PNAME%"
+	dotnet add "%PNAME%" package System.Drawing.Common --version 6.0.0
+	dotnet add "%PNAME%" package System.Security.Cryptography.Pkcs --version 6.0.0
+	powershell -ExecutionPolicy Bypass addtoiis.ps1 -path "%CD%" -name "%IISNAME%" -sdname "%SUBDOMAIN%" -pname "%PNAME%" -netframework "%FRAMEWORK%"
 )
 
 mv .gitignore ..
@@ -86,6 +89,8 @@ dotnet build
 if /I "%ADD_TO_IIS%" == "y" (
 	explorer "https://%SUBDOMAIN%.localtest.me"
 )
+
+dotnet run
 
 exit /b
 
