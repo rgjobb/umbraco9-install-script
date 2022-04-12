@@ -20,12 +20,14 @@ set "ISEC=Integrated Security"
 set "DEFAULT_DBSERVER=localhost\SQLEXPRESS"
 set "DEFAULT_UPDATE=n"
 set "DEFAULT_FRAMEWORK=net5.0"
+set "DEFAULT_ADD_SOLUTION=y"
 
 if not defined FRAMEWORK set "FRAMEWORK=%DEFAULT_FRAMEWORK%"
 if not defined UMBRACO_UPDATE_TEMPLATES set /p UPDATE="Update Umbraco Templates (Y/[N]): " || set "UMBRACO_UPDATE_TEMPLATES=%DEFAULT_UPDATE%"
 if /I "%UMBRACO_UPDATE_TEMPLATES%" == "y" dotnet new -i Umbraco.Templates::*
 if not defined INSTALLPATH set /p INSTALLPATH="Install path (root folder) [%DEFAULT_INSTALLPATH%]: " || set "INSTALLPATH=%DEFAULT_INSTALLPATH%"
-set /p SNAME="Solution Name [%SNAME%]: "
+if not defined ADD_SOLUTION set /p ADD_SOLUTION="Add solution ([Y]/N): " || set "ADD_SOLUTION=%DEFAULT_ADD_SOLUTION%"
+if /I "%ADD_SOLUTION%" == "y" set /p SNAME="Solution Name [%SNAME%]: "
 set /p PNAME="Project Name [%PNAME%]: "
 set "DEFAULT_DBNAME=%PNAME%"
 if not defined DBSERVER set /p DBSERVER="Database Server [%DEFAULT_DBSERVER%]: " || set "DBSERVER=%DEFAULT_DBSERVER%"
@@ -52,17 +54,23 @@ if not defined INSTALL_IGLOO set /p INSTALL_IGLOO="Add Igloo ([Y]/N): " || set "
 
 if /I "%INSTALLPATH%" NEQ "%CD%" cd /d "%INSTALLPATH%"
 
-mkdir "%SNAME%"
-cd "%SNAME%"
-dotnet new sln --name "%SNAME%"
+if /I "%ADD_SOLUTION%" == "y" (
+	mkdir "%SNAME%"
+	cd "%SNAME%"
+	dotnet new sln --name "%SNAME%"
+)
+
 dotnet new umbraco -n "%PNAME%" --friendly-name "Admin User" --email "%UMBRACO_EMAIL%" --password "%UMBRACO_PWD%" --connection-string "%DBCSTRING%" --Framework "%FRAMEWORK%"
-dotnet sln add "%PNAME%"
+
+if /I "%ADD_SOLUTION%" == "y" (
+	dotnet sln add "%PNAME%"
+)
+
+cd "%PNAME%"
 
 if /I "%INSTALL_IGLOO%" == "y" (
 	dotnet add "%PNAME%" package "%IGLOO_PACKAGE%"
 )
-
-cd "%PNAME%"
 
 if defined "%PACKAGES%" (
 	for %%a in ("%PACKAGES:,=" "%") do (
@@ -77,13 +85,18 @@ if defined "%CUSTOM_PACKAGES%" if defined "%CUSTOM_NUGET_SOURCE%" (
 )
 
 if /I "%ADD_TO_IIS%" == "y" (
-	dotnet add "%PNAME%" package System.Drawing.Common --version 6.0.0
-	dotnet add "%PNAME%" package System.Security.Cryptography.Pkcs --version 6.0.0
+	dotnet add package System.Drawing.Common --version 6.0.0
+	dotnet add package System.Security.Cryptography.Pkcs --version 6.0.0
 	powershell -ExecutionPolicy Bypass addtoiis.ps1 -path "%CD%" -name "%IISNAME%" -sdname "%SUBDOMAIN%" -pname "%PNAME%" -netframework "%FRAMEWORK%"
 )
 
-mv .gitignore ..
-git init ..
+if /I "%ADD_SOLUTION%" == "y" (
+	mv .gitignore ..
+	git init ..
+) else (
+	git init
+)
+
 dotnet build
 
 if /I "%ADD_TO_IIS%" == "y" (
