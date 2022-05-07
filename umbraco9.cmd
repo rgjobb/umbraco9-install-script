@@ -100,6 +100,9 @@ if /I "%ADD_SOLUTION%" == "y" (
 dotnet build
 
 if /I "%ADD_TO_IIS%" == "y" (
+	if /I "%FRAMEWORK%" == "net6.0" (
+		copy "%~dp0System.Security.Cryptography.Pkcs.dll" "%CD%\bin\debug\net6.0\"
+	)
 	explorer "https://%SUBDOMAIN%.localtest.me"
 )
 

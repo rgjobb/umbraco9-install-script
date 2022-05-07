@@ -73,8 +73,7 @@ $iisls1 = '"iis": {
 	"iisExpress":'
 	
 $iisls2 = '"IIS": {
-      "commandName": "IIS",
-      "launchBrowser": true,
+      "commandName": "IIS",      
       "launchUrl": "https://'+$sdname+'.localtest.me",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
